@@ -1,0 +1,53 @@
+# A deployment resource will run the container/pod in the cluster for you.
+# Think of it as the declarative version of "docker run."
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: knote
+spec:
+  replicas: 1
+  selector:
+    # selects the labels to match for pods to select for this deployment:
+    matchLabels:
+      app: knote
+  template:
+    metadata:
+      # defines labels for pods that wrap the specified container(s)
+      # Ties the Service to the Deployment
+      labels:
+        app: knote
+    spec:
+      containers:
+        - name: knote
+          image: abstraktmach/knote.js:0.0.1
+          ports:
+            - containerPort: 3000
+          env:
+            - name: MONGO_URL
+            # hostname is mongo because name of mongoDB Service is mongo.
+            # If you named your MongoDB service foo, then you would need to 
+            # change the value of the MONGO_URL variable to monogdb://foo:27017
+              value: mongodb://mongo:27017/dev
+          imagePullPolicy: Always
+---
+# A Service will expose a Pod by forwarding requests to that pod.
+# To expose your app, you need a Service.
+# A Service also guarantees availability because it only routes traffic to 
+# pods with containers that are ready! It also reassigns the IP when new pod comes up!
+apiVersion: v1
+kind: Service
+metadata:
+  name: knote
+spec:
+  selector:
+  # selects the pods to expose according to their labels.
+    app: knote # all pods that have label app: knote will be exposed.
+  ports:
+    # listens on port 80 and forwards those requests to port 3000 of pods:
+    - port: 80
+      targetPort: 3000
+  # default service type is ClusterIP which makes exposed Pods only available
+  # from the cluster. A LoadBalancer service builds on a NodePort
+  # k explain service.spec.type
+  # type: LoadBalancer
+  
