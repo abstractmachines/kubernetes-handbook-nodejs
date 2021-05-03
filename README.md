@@ -1,6 +1,17 @@
 # Kubernetes Handbook for NodeJS
 
 This is a k8s "handbook" for local development with kind clusters based on a  Node app by [Learnk8s](https://learnk8s.io/developing-and-packaging-nodejs-docker).
+
+> Table of Contents
+- [Runbooks for containerization and orchestration](#Runbooks)
+- [Kubernetes Resources](#Kubernetes-Resources)
+- [Controllers](#Controllers)
+- [Operators](#Operators)
+- [Custom Resource Definitions](#Custom-Resource-Definitions)
+- [Draining Nodes](#Draining-Nodes)
+- [Logs](#Logs)
+- [fluentd](#fluentd)
+- [Kubernetes CLI](#Kubernetes-CLI)
 ## Dependencies (brew)
 - Kubernetes
 - NodeJS
@@ -66,10 +77,57 @@ This is a k8s "handbook" for local development with kind clusters based on a  No
 > cURL or view in browser at port 3000 of local machine 
 
 
+## Kubernetes Resources
+
+[k8s resources API](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/)
+
+### Resource Categories
+
+- **Workload Resources:** run and manage cluster
+- **Storage and Config Resources:** Inject initial data into apps. PERSIST external data (outside of container).
+- **Discovery and Load Balancing Resources:** Expose workloads into external services
+- **Cluster Resources:** Define cluster config ... typically used by cluster operators!
+- **Metadata Resources:** configure other resources
 
 
+### Kind: A kind of REST resource.
 
+### Workload Resources
 
+> Containers: Created by Controllers, through Pods.
 
+> Pods: Run containers. Smallest unit of deployment.
 
+> Controllers: Deployment, Job, StatefulSet, more ...
+  - `Deployment`: Stateless apps w persistence (ex: HTTP server).
+  - `Job`: Run-to-completion applications (batch jobs)
+  - `StatefulSet`: Stateful, persistent apps (ex: databases).
+
+> Defining a deployment
+  - A Deployment defines how to run an app in the cluster, but it doesn't make it available to other apps.
+
+> Labels: match pods to deployments
+  - `labels` to define pods that wrap containers, `matchLabels` to match _those_ labels to a deployment.
+
+> Defining a Service
+  - To expose your app, you need a Service. A Service will expose a Pod by forwarding requests to that pod.
+  - A Service also guarantees availability because it only routes traffic to pods with containers that are ready! It also reassigns the IP when new pod comes up!
+
+> Contextual Fields (e.g. `selector`)
+  - When in a `Deployment definition`, `selector` selects what Service(s) to deploy.
+  - When in a `Service definition`, `selector` selects what pods to expose.
+
+## Controllers
+
+## Operators
+
+## Custom Resource Definitions
+
+## Draining Nodes
+
+## Logs
+
+## fluentd
+
+## Kubernetes CLI
 
