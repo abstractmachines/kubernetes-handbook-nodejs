@@ -26,6 +26,9 @@ This is a k8s "handbook" for local development with kind clusters based on a  No
 ## Runbooks
 
 ### Dockerization and manually running containers
+
+> A little "Runbook" for local development using the `kind` tooling for k8s
+
 > Build to containerize, tag and push image to Docker hub container registry
 -  `docker build -t knote .`
 - `docker tag knote <username>/knote.js:1.0.0`
@@ -43,10 +46,19 @@ This is a k8s "handbook" for local development with kind clusters based on a  No
 > Start NodeJS container. Use port forwarding to map ports in container to local
 - `docker run --name=knote --rm --network=knote-mongodb -p 3000:3000 -e MONGO_URL=mongodb://mongo:27017/dev <username>/knote.js:0.0.1`
 
+> Make sure you shutdown your containers with `docker stop` to cleanup
+- To differentiate between using Docker versus using Kubernetes for orchestration,
+consider shutting down these containers you've been running.
+
 ### Container orchestration with Kubernetes
 
+> A little "Runbook" for local development using the `kind` tooling for k8s
+- The Docker tutorial above uses Docker Networks to run and "orchestrate" containers.
+- Shut those containers down and let's instead use Kubernetes to declaratively
+run, stop and start those containers.
+
 > Create Kind cluster and namespace
-- `kind create cluster`
+- `kind create cluster --name awesomeness` // You just created a kind cluster `awesomeness` w `kind` prefix
 - To view cluster `kubectl cluster-info`
 - use `kubectx` to view cluster(s) and `kubens` for namespaces
 
@@ -67,12 +79,12 @@ This is a k8s "handbook" for local development with kind clusters based on a  No
 - internal DNS of each cluster / pod
 
 > Deploying the containers to the cluster
-- `kubectl apply -f kube` will _declaratively apply_ the resources to the cluster selected in the current context
+- `kubectl apply -f ./kube` will _declaratively apply_ the resources to the cluster selected in the current context
 - `kubectl create` imperatively creates each resource and complains if the resources already exist
 - Then watch: `kubectl get pods --watch`
 
 > Port forward NodeJS Kubernetes pod port 3000 to port 3000 of your local machine
-- `kubectl <PODNAME> 3000:3000`
+- `kubectl port-forward <PODNAME> 3000:3000`
 
 > cURL or view in browser at port 3000 of local machine 
 
